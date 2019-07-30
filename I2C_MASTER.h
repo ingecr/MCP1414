@@ -50,7 +50,7 @@ char I2C_Master_Write(unsigned char);          /* Write data/address to slave de
 void I2C_Master_Ack(void);                     /* Send acknowledge to slave for continue read */
 void I2C_Master_Nack(void);                    /* Send negative acknowledge to slave for stop current communication */
 char I2C_Master_Read(char);                    /* Read data from slave devices with 0=Ack & 1=Nack */
-void MSdelay(unsigned int val);
+
 
 #endif	/* I2C_Master_H */
 

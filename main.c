@@ -16,6 +16,8 @@
 #pragma config MCLRE = OFF      // MCLR Pin Enable bit (Disabled)
 #pragma config FOSC = HSH       // Oscillator Selection (HS oscillator, high power 16MHz to 25MHz)
 
+#define _XTAL_FREQ 16000000
+
 #define LED_OP PORTDbits.RD1
 
 
@@ -35,7 +37,7 @@ void main(void) {
     
     LCD_INIT();
     I2C_Master_Init();
-    MSdelay(150);
+    __delay_ms(150);
     //MCP1414_writeConfig(MCP1414_Data_Config);
     MCP1414_setConversRate(MCP1414_Data_Conv_Rate);
     MCP1414_setTemeratureLimit(MCP1414_Data_Temp_Limit_Int_H , MCP1414_Data_Temp_Limit_1_H , MCP1414_Data_Temp_Limit_2_H , MCP1414_Data_Temp_Limit_3_H, 

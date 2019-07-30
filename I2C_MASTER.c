@@ -16,7 +16,7 @@ void I2C_Master_Init()
     SSP1CON1 = 0x28;			      /* Enable SSP port for I2C Master mode, clock = FOSC / (4 * (SSPADD+1))*/ 
 	SSP1CON2 = 0;
     SSP1ADD = BITRATE;                /* Set clock frequency */  
-    SSPIE = 1;                        /* Enable SSPIF interrupt */
+    SSPIE = 0;                        /* Enable SSPIF interrupt */
     SSPIF = 0;
 }
 
@@ -38,7 +38,12 @@ void I2C_Master_Start_Wait(char slave_write_address)
     while(SSP1CON2bits.SEN);         /* Wait for completion of START */
     SSPIF = 0;
     if(!SSP1STATbits.S)              /* Continue if START is failed */
-        continue;
+        if(SSP1CON1bits.WCOL || SSP1CON1bits.SSPOV){
+            SSP1CON1bits.WCOL   = 0;
+            SSP1CON1bits.SSPOV  = 0;
+            continue;
+        }
+        
     I2C_Master_Write(slave_write_address); /* Write slave device address with write to communicate */
     if(ACKSTAT)                     /* Check whether Acknowledgment received or not */
     {
@@ -96,7 +101,7 @@ char I2C_Master_Read(char flag)            /* Read data from slave devices with 
         I2C_Master_Ack();                  /* Send acknowledgment */
     else
         I2C_Master_Nack();                 /* Send negative acknowledgment */
-    I2C_Master_Ready();
+    //I2C_Master_Ready();
     return(buffer);
 }
 
@@ -113,15 +118,9 @@ char I2C_Master_Stop()
 
 void I2C_Master_Ready()
 {
-    while(!SSPIF);                  /* Wait for operation complete */
+    //while(!SSPIF);                  /* Wait for operation complete */
+    while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));
     SSPIF=0;                        /*clear SSPIF interrupt flag*/
-}
-
-void MSdelay(unsigned int val)
-{
-     unsigned int i,j;
-        for(i=0;i<=val;i++)
-            for(j=0;j<165;j++);      /*This count Provide delay of 1 ms for 8MHz Frequency */
 }
 
 
